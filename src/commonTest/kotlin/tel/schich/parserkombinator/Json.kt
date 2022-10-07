@@ -1,12 +1,12 @@
 package tel.schich.parserkombinator
 
-fun parseJsonString(slice: StringSlice): Result<Json.String> {
+fun parseJsonString(slice: StringSlice): ParserResult<Json.String> {
     if (slice.isEmpty()) {
-        return Result.Error("Expected string, but got nothing", slice)
+        return ParserResult.Error("Expected string, but got nothing", slice)
     }
     val first = slice[0]
     if (first != '"') {
-        return Result.Error("Strings must start with a \", but started with $first", slice)
+        return ParserResult.Error("Strings must start with a \", but started with $first", slice)
     }
 
     val string = StringBuilder()
@@ -14,7 +14,7 @@ fun parseJsonString(slice: StringSlice): Result<Json.String> {
     var i = 1
     while (true) {
         if (i >= slice.length) {
-            return Result.Error("Reached end of input", slice)
+            return ParserResult.Error("Reached end of input", slice)
         }
         val c = slice[i]
         when {
@@ -26,7 +26,7 @@ fun parseJsonString(slice: StringSlice): Result<Json.String> {
                 verbatim = true
             }
             c == '"' -> {
-                return Result.Ok(Json.String(string.toString()), slice.subSlice(i + 1))
+                return ParserResult.Ok(Json.String(string.toString()), slice.subSlice(i + 1))
             }
             else -> {
                 string.append(c)
@@ -49,7 +49,7 @@ val parseJsonBool = takeString("true").map { Json.Bool(value = true) }.or(takeSt
 val parseWhitespace = takeWhile { it == ' ' || it == '\t' || it == '\r' || it == '\n' }
 val parseCommaSeparator = parseWhitespace.andThenTake(take(',')).then(parseWhitespace)
 
-fun parseJsonObjectEntry(input: StringSlice): Result<Pair<Json.String, Json>> = ::parseJsonString
+fun parseJsonObjectEntry(input: StringSlice): ParserResult<Pair<Json.String, Json>> = ::parseJsonString
     .andThenIgnore(parseWhitespace)
     .andThenIgnore(take(':'))
     .andThenIgnore(parseWhitespace)
@@ -60,7 +60,7 @@ val parseJsonObject = take('{').then(parseWhitespace)
     .andThenTake(parseSeparatedList(::parseJsonObjectEntry, parseCommaSeparator).map { Json.Object(it.toMap()) })
     .then(parseWhitespace).then(take('}'))
 
-fun parseJsonArray(input: StringSlice): Result<Json.Array> = take('[').then(parseWhitespace)
+fun parseJsonArray(input: StringSlice): ParserResult<Json.Array> = take('[').then(parseWhitespace)
     .andThenTake(parseSeparatedList(parseJson, parseCommaSeparator).map { Json.Array(it) })
     .then(parseWhitespace).then(take(']'))
     .invoke(input)

@@ -47,12 +47,12 @@ fun <T> trace(msg: String, shallow: Boolean, parser: Parser<T>): Parser<T> {
             suppressTraces = false
             traceDepth -= 1
             when (result) {
-                is Result.Ok -> {
+                is ParserResult.Ok -> {
                     val len = input.length - result.rest.length
                     val content = input.string.substring(input.offset, input.offset + len)
                     println("$prefix ✓ (len=$len, content=\"${ forTrace(content, "\"")}\")")
                 }
-                is Result.Error -> {
+                is ParserResult.Error -> {
                     println("$prefix ! ${forTrace(result.message)}")
                 }
             }
