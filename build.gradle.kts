@@ -16,6 +16,8 @@ version = "0.2.0"
 
 tasks.withType<Test> {
     useJUnitPlatform()
+    val traceProperty = "tel.schich.parser-kombinator.trace"
+    systemProperties[traceProperty] = System.getProperty(traceProperty)
 }
 
 tasks.withType<KotlinCompile> {
