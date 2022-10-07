@@ -1,4 +1,4 @@
-package tel.schich.parserkombinators
+package tel.schich.parserkombinator
 
 import kotlin.test.Test
 import kotlin.test.assertEquals

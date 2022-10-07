@@ -1,4 +1,4 @@
-package tel.schich.parserkombinators
+package tel.schich.parserkombinator
 
 typealias Parser<T> = (StringSlice) -> Result<T>
 

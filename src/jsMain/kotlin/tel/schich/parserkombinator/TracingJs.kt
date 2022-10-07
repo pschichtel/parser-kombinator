@@ -1,4 +1,4 @@
-package tel.schich.parserkombinators
+package tel.schich.parserkombinator
 
 var enableTracing: Boolean = false
 

@@ -1,4 +1,4 @@
-package tel.schich.parserkombinators
+package tel.schich.parserkombinator
 
 data class StringSlice(val string: String, val offset: Int, override val length: Int) : CharSequence {
     override fun get(index: Int): Char = string[offset + index]

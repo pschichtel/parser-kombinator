@@ -1,4 +1,4 @@
-package tel.schich.parserkombinators
+package tel.schich.parserkombinator
 
 sealed interface Result<out T> {
 

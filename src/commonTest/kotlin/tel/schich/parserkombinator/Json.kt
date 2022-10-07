@@ -1,4 +1,4 @@
-package tel.schich.parserkombinators
+package tel.schich.parserkombinator
 
 fun parseJsonString(slice: StringSlice): Result<Json.String> {
     if (slice.isEmpty()) {

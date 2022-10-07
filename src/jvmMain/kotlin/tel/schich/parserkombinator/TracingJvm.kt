@@ -1,4 +1,4 @@
-package tel.schich.parserkombinators
+package tel.schich.parserkombinator
 
 private val enableTracing = System.getProperty("tel.schich.parser-kombinator.trace", "false").toBoolean()
 
