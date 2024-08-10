@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -13,6 +14,11 @@ plugins {
 group = "tel.schich"
 version = "0.2.0"
 
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(8)
+    }
+}
 
 tasks.withType<Test> {
     useJUnitPlatform()
@@ -21,8 +27,8 @@ tasks.withType<Test> {
 }
 
 tasks.withType<KotlinCompile> {
-    kotlinOptions {
-        jvmTarget = "1.8"
+    compilerOptions {
+        jvmTarget = JvmTarget.JVM_1_8
         freeCompilerArgs = listOf("-progressive")
     }
 }
@@ -53,7 +59,6 @@ kotlin {
         val commonMain by getting {}
 
         val commonTest by getting {
-            dependsOn(commonMain)
             dependencies {
                 implementation(kotlin("test-common"))
                 implementation(kotlin("test-annotations-common"))
@@ -61,16 +66,12 @@ kotlin {
         }
 
         val jvmMain by getting {
-            dependsOn(commonMain)
         }
 
         val jsMain by getting {
-            dependsOn(commonMain)
         }
 
         getByName("jvmTest") {
-            dependsOn(commonTest)
-            dependsOn(jvmMain)
             dependencies {
                 val junitVersion = "5.9.0"
                 implementation(kotlin("test"))
@@ -81,8 +82,6 @@ kotlin {
         }
 
         getByName("jsTest") {
-            dependsOn(commonTest)
-            dependsOn(jsMain)
             dependencies {
                 implementation(kotlin("test-js"))
             }
