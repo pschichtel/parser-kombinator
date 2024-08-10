@@ -12,7 +12,7 @@ sealed interface Json {
     data class Integer(val value: Long) : Number
     data class Float(val value: Double) : Number
     data class Bool(val value: Boolean) : Json
-    object Null : Json
+    data object Null : Json
 }
 
 class JsonParserTest {
