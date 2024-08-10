@@ -12,7 +12,7 @@ plugins {
 }
 
 group = "tel.schich"
-version = "0.2.0"
+version = "0.3.0"
 
 java {
     toolchain {
@@ -123,6 +123,8 @@ publishing {
                     developerConnection.set("scm:git:git@github.com:pschichtel/parser-kombinator")
                 }
             }
+        }
+        publications.named("jvm", MavenPublication::class) {
             artifact(javadocJar)
         }
     }
