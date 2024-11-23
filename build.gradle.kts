@@ -11,7 +11,7 @@ plugins {
 }
 
 group = "tel.schich"
-version = "0.3.1-SNAPSHOT"
+version = "0.3.1"
 
 tasks.withType<Test> {
     useJUnitPlatform()
