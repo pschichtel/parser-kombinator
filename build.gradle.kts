@@ -3,12 +3,11 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     signing
-    java
     `maven-publish`
-    kotlin("multiplatform")
-    id("org.jetbrains.dokka")
-    id("io.github.gradle-nexus.publish-plugin")
-    id("io.gitlab.arturbosch.detekt")
+    alias(libs.plugins.kotlinMultiplatform)
+    alias(libs.plugins.dokka)
+    alias(libs.plugins.nexusPublish)
+    alias(libs.plugins.detekt)
 }
 
 group = "tel.schich"
@@ -46,12 +45,18 @@ repositories {
 }
 
 kotlin {
+    jvmToolchain(8)
     jvm {
         withJava()
     }
     js(IR) {
         browser {
             binaries.executable()
+            testTask {
+                useKarma {
+                    useFirefoxHeadless()
+                }
+            }
         }
         nodejs()
     }
@@ -60,6 +65,7 @@ kotlin {
 
         val commonTest by getting {
             dependencies {
+                implementation(kotlin("test"))
                 implementation(kotlin("test-common"))
                 implementation(kotlin("test-annotations-common"))
             }
@@ -69,22 +75,6 @@ kotlin {
         }
 
         val jsMain by getting {
-        }
-
-        getByName("jvmTest") {
-            dependencies {
-                val junitVersion = "5.9.0"
-                implementation(kotlin("test"))
-                implementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
-                implementation("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
-                implementation("org.slf4j:slf4j-simple:1.7.36")
-            }
-        }
-
-        getByName("jsTest") {
-            dependencies {
-                implementation(kotlin("test-js"))
-            }
         }
     }
 }
