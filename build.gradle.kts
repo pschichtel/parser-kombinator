@@ -13,12 +13,6 @@ plugins {
 group = "tel.schich"
 version = "0.3.1-SNAPSHOT"
 
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(8)
-    }
-}
-
 tasks.withType<Test> {
     useJUnitPlatform()
     val traceProperty = "tel.schich.parser-kombinator.trace"
@@ -61,8 +55,6 @@ kotlin {
         nodejs()
     }
     sourceSets {
-        val commonMain by getting {}
-
         val commonTest by getting {
             dependencies {
                 implementation(kotlin("test"))
