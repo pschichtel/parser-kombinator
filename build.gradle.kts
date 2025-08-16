@@ -41,7 +41,6 @@ repositories {
 kotlin {
     jvmToolchain(8)
     jvm {
-        withJava()
     }
     js(IR) {
         browser {
@@ -71,9 +70,9 @@ kotlin {
     }
 }
 
-val javadocJar by tasks.creating(Jar::class) {
-    from(tasks.dokkaHtml)
-    dependsOn(tasks.dokkaHtml)
+val javadocJar by tasks.registering(Jar::class) {
+    from(dokka.dokkaPublications.html.map { it.outputDirectory })
+    dependsOn(tasks.dokkaGeneratePublicationHtml)
     archiveClassifier.set("javadoc")
 }
 
