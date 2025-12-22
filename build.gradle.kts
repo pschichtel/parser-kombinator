@@ -228,3 +228,17 @@ val mavenCentralDeploy by tasks.registering(DefaultTask::class) {
         }
     }
 }
+
+val githubActions by tasks.registering(DefaultTask::class) {
+    group = "publishing"
+    val deployRefPattern = """^refs/(?:tags/v\d+.\d+.\d+|heads/main)$""".toRegex()
+    val ref = System.getenv("GITHUB_REF")?.ifBlank { null }?.trim()
+
+    if (ref != null && deployRefPattern.matches(ref)) {
+        logger.lifecycle("Job in $ref will deploy!")
+        dependsOn(mavenCentralDeploy)
+    } else {
+        logger.lifecycle("Job will only build!")
+        dependsOn(tasks.assemble)
+    }
+}
