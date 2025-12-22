@@ -1,3 +1,4 @@
+import io.github.danielliu1123.deployer.PublishingType
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -6,12 +7,15 @@ plugins {
     `maven-publish`
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.dokka)
-    alias(libs.plugins.nexusPublish)
+    alias(libs.plugins.mavenDeployer)
     alias(libs.plugins.detekt)
 }
 
 group = "tel.schich"
 version = "0.3.1"
+val isSnapshot = version.toString().endsWith("-SNAPSHOT")
+val snapshotsRepo = "mavenCentralSnapshots"
+val releasesRepo = "mavenLocal"
 
 tasks.withType<Test> {
     useJUnitPlatform()
@@ -76,9 +80,18 @@ val javadocJar by tasks.registering(Jar::class) {
     archiveClassifier.set("javadoc")
 }
 
-fun isSnapshot() = version.toString().endsWith("-SNAPSHOT")
-
 publishing {
+    repositories {
+        maven {
+            name = snapshotsRepo
+            url = uri("https://central.sonatype.com/repository/maven-snapshots/")
+            credentials(PasswordCredentials::class)
+        }
+        maven {
+            name = releasesRepo
+            url = layout.buildDirectory.dir("repo").get().asFile.toURI()
+        }
+    }
     publications {
         publications.withType<MavenPublication> {
             pom {
@@ -111,13 +124,93 @@ publishing {
     }
 }
 
-signing {
-    useGpgCmd()
-    sign(publishing.publications)
+val ci = System.getenv("CI") != null
+private val signingKey = System.getenv("SIGNING_KEY")?.ifBlank { null }?.trim()
+private val signingKeyPassword = System.getenv("SIGNING_KEY_PASSWORD")?.ifBlank { null }?.trim() ?: ""
+
+when {
+    signingKey != null -> {
+        logger.lifecycle("Received a signing key, using in-memory pgp keys!")
+        signing {
+            useInMemoryPgpKeys(signingKey, signingKeyPassword)
+            sign(publishing.publications)
+        }
+    }
+    !ci -> {
+        logger.lifecycle("Not running in CI, using the gpg command!")
+        signing {
+            useGpgCmd()
+            sign(publishing.publications)
+        }
+    }
+    else -> {
+        logger.lifecycle("Not signing artifacts!")
+    }
 }
 
-nexusPublishing {
-    repositories {
-        sonatype()
+private fun Project.getSecret(name: String): Provider<String> = provider {
+    val env = System.getenv(name)
+        ?.ifBlank { null }
+    if (env != null) {
+        return@provider env
+    }
+
+    val propName = name.split("_")
+        .map { it.lowercase() }
+        .joinToString(separator = "") { word ->
+            word.replaceFirstChar { it.uppercase() }
+        }
+        .replaceFirstChar { it.lowercase() }
+
+    property(propName) as String
+}
+
+deploy {
+    // dirs to upload, they will all be packaged into one bundle
+    dirs = provider {
+        allprojects
+            .map { it.layout.buildDirectory.dir("repo").get().asFile }
+            .filter { it.exists() }
+            .toList()
+    }
+    username = project.getSecret("MAVEN_CENTRAL_PORTAL_USERNAME")
+    password = project.getSecret("MAVEN_CENTRAL_PORTAL_PASSWORD")
+    publishingType = if (ci) {
+        PublishingType.WAIT_FOR_PUBLISHED
+    } else {
+        PublishingType.USER_MANAGED
+    }
+}
+
+tasks.deploy {
+    for (project in allprojects) {
+        val publishTasks = project.tasks
+            .withType<PublishToMavenRepository>()
+        mustRunAfter(publishTasks)
+    }
+}
+
+val mavenCentralDeploy by tasks.registering(DefaultTask::class) {
+    group = "publishing"
+
+    val repo = if (isSnapshot) {
+        snapshotsRepo
+    } else {
+        dependsOn(tasks.deploy)
+        releasesRepo
+    }
+    for (project in allprojects) {
+        val publishTasks = project.tasks
+            .withType<PublishToMavenRepository>()
+            .matching { it.repository.name == repo }
+        dependsOn(publishTasks)
+    }
+
+    doFirst {
+        if (isSnapshot) {
+            logger.lifecycle("Snapshot deployment!")
+        } else {
+            logger.lifecycle("Release deployment!")
+        }
     }
 }

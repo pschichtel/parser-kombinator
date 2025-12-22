@@ -1,11 +1,11 @@
 [versions]
 kotlin = "2.3.0"
 dokka = "2.1.0"
-nexusPublish = "2.0.0"
 detekt = "1.23.8"
+mavenDeployer = "0.5.2"
 
 [plugins]
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
-nexusPublish = { id = "io.github.gradle-nexus.publish-plugin", version.ref = "nexusPublish" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
+mavenDeployer = { id = "io.github.danielliu1123.deployer", version.ref = "mavenDeployer" }
