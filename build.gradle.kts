@@ -15,7 +15,7 @@ plugins {
 
 scmVersion {
     tag {
-        prefix = ""
+        prefix = "v"
     }
     nextVersion {
         suffix = "SNAPSHOT"
