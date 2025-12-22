@@ -1,6 +1,7 @@
 import io.github.danielliu1123.deployer.PublishingType
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import pl.allegro.tech.build.axion.release.domain.PredefinedVersionCreator
 
 plugins {
     signing
@@ -9,10 +10,22 @@ plugins {
     alias(libs.plugins.dokka)
     alias(libs.plugins.mavenDeployer)
     alias(libs.plugins.detekt)
+    alias(libs.plugins.axionRelease)
+}
+
+scmVersion {
+    tag {
+        prefix = ""
+    }
+    nextVersion {
+        suffix = "SNAPSHOT"
+        separator = "-"
+    }
+    versionCreator = PredefinedVersionCreator.SIMPLE.versionCreator
 }
 
 group = "tel.schich"
-version = "0.3.1"
+version = scmVersion.version
 val isSnapshot = version.toString().endsWith("-SNAPSHOT")
 val snapshotsRepo = "mavenCentralSnapshots"
 val releasesRepo = "mavenLocal"
@@ -47,6 +60,7 @@ kotlin {
     jvm {
     }
     js(IR) {
+        this.
         browser {
             binaries.executable()
             testTask {

@@ -3,9 +3,11 @@ kotlin = "2.3.0"
 dokka = "2.1.0"
 detekt = "1.23.8"
 mavenDeployer = "0.5.2"
+axionRelease = "1.21.1"
 
 [plugins]
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 mavenDeployer = { id = "io.github.danielliu1123.deployer", version.ref = "mavenDeployer" }
+axionRelease = { id = "pl.allegro.tech.build.axion-release", version.ref = "axionRelease" }
