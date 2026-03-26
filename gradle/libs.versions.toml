@@ -1,6 +1,6 @@
 [versions]
 kotlin = "2.3.20"
-dokka = "2.1.0"
+dokka = "2.2.0"
 detekt = "1.23.8"
 mavenDeployer = "0.5.2"
 axionRelease = "1.21.1"
