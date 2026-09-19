@@ -3,7 +3,7 @@ kotlin = "2.4.20"
 dokka = "2.2.0"
 detekt = "1.23.8"
 mavenDeployer = "0.5.2"
-axionRelease = "1.21.3"
+axionRelease = "1.21.4"
 
 [plugins]
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
